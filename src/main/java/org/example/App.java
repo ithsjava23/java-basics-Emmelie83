@@ -9,7 +9,7 @@ public class App {
 
     public static void main(String[] args) {
         // Declare and initialize variables
-        int selection = 0;
+        int selection;
         int[][] timeAndPrices = new int[2][24];
 
 
@@ -23,16 +23,13 @@ public class App {
                     findMinMaxAverage(timeAndPrices);
                     break;
                 case 3:
-                    // Print error message if there are no articles in the register
-
+                    sortAndPrintArray(timeAndPrices);
                     break;
-
                 case 4:
 
                     break;
                 case -1:
                     // End the program
-                    System.out.printf("Avsluta");
                     return;
             }
         }
@@ -62,8 +59,8 @@ public class App {
      */
     public static int input()
     {
-        int number = 0;
-        String string = "";
+        int number;
+        String string;
 
         while (true)
         {
@@ -87,7 +84,6 @@ public class App {
                     return -1;
                 }
                 System.out.println("Felaktig input. Försök på nytt:");
-                continue;
             }
         }
     }
@@ -107,7 +103,7 @@ public class App {
         int minIndex = array[0][0];
         int maxIndex = array[0][0];
         int sum = 0;
-        double average = 0;
+        double average;
         for (int i = 0; i < array[1].length; i++) {
             if (array[1][i] < min) {
                 min = array[1][i];
@@ -123,6 +119,31 @@ public class App {
         System.out.printf("\nLägsta pris: %02d-%02d, %d öre/kWh\n", minIndex, minIndex + 1, min);
         System.out.printf("Högsta pris: %02d-%02d, %d öre/kWh\n", maxIndex, maxIndex + 1, max);
         System.out.printf("Medelpris: %.2f öre/kWh\n", average);
+    }
+
+    public static void sortAndPrintArray(int[][] array) {
+        int temp;
+        for (int i = 0; i < array[1].length; i++)
+        {
+            for (int j = 0; j < array[1].length - 1; j++)
+            {
+                //
+                if (array[1][j] < array[1][j + 1])
+                {
+                    //
+                    temp = array[1][j + 1];
+                    array[1][j + 1] = array[1][j];
+                    array[1][j] = temp;
+                    //
+                    temp = array[0][j + 1];
+                    array[0][j + 1] = array[0][j];
+                    array[0][j] = temp;
+                }
+            }
+        }
+        for (int i = 0; i < array[1].length; i++) {
+            System.out.printf("%02d-%02d %d öre\n", array[0][i], array[0][i] + 1, array[1][i]);
+        }
     }
 
 
