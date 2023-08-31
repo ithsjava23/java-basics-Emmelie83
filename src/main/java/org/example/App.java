@@ -26,6 +26,8 @@ public class App {
                 case 4:
                     findBestChargingTime(timeAndPrices);
                     break;
+                case 5:
+                    printDiagram(timeAndPrices);
                 case -1:
                     return;
             }
@@ -44,6 +46,7 @@ public class App {
         System.out.printf("2. Min, Max och Medel\n");
         System.out.printf("3. Sortera\n");
         System.out.printf("4. Bästa Laddningstid (4h)\n");
+        System.out.printf("5. Skapa diagram\n");
         System.out.printf("e. Avsluta\n");
         selection = input();
         return selection;
@@ -64,7 +67,7 @@ public class App {
             if (scan.hasNextInt())
             {
                 number = scan.nextInt();
-                if (number > 0 && number < 5)
+                if (number > 0 && number < 6)
                 {
                     scan.nextLine();
                     return number;
@@ -90,7 +93,20 @@ public class App {
         for (int i = 0; i < array[1].length; i++) {
             System.out.printf("\nElpriset kl. %02d-%02d: ", i, i + 1);
             array[0][i] = i;
-            array[1][i] = scan.nextInt();
+            array[1][i] = checkInputPrices();
+        }
+    }
+
+    public static int checkInputPrices() {
+        int input;
+        while(true) {
+            if (scan.hasNextInt()) {
+                input = scan.nextInt();
+                return input;
+            } else if (scan.hasNext()) {
+                System.out.printf("Felaktig input. Försök igen.\n");
+                scan.nextLine();
+            }
         }
     }
 
@@ -119,27 +135,32 @@ public class App {
     }
 
     public static void sortAndPrintArray(int[][] array) {
+        int[][] array2 = new int[2][24];
+        for (int i = 0; i < array[1].length; i++) {
+            array2[0][i] = array[0][i];
+            array2[1][i] = array[1][i];
+        }
         int temp;
-        for (int i = 0; i < array[1].length; i++)
+        for (int i = 0; i < array2[1].length; i++)
         {
-            for (int j = 0; j < array[1].length - 1; j++)
+            for (int j = 0; j < array2[1].length - 1; j++)
             {
                 //
-                if (array[1][j] < array[1][j + 1])
+                if (array2[1][j] < array2[1][j + 1])
                 {
                     //
-                    temp = array[1][j + 1];
-                    array[1][j + 1] = array[1][j];
-                    array[1][j] = temp;
+                    temp = array2[1][j + 1];
+                    array2[1][j + 1] = array2[1][j];
+                    array2[1][j] = temp;
                     //
-                    temp = array[0][j + 1];
-                    array[0][j + 1] = array[0][j];
-                    array[0][j] = temp;
+                    temp = array2[0][j + 1];
+                    array2[0][j + 1] = array2[0][j];
+                    array2[0][j] = temp;
                 }
             }
         }
-        for (int i = 0; i < array[1].length; i++) {
-            System.out.printf("%02d-%02d %d öre\n", array[0][i], array[0][i] + 1, array[1][i]);
+        for (int i = 0; i < array2[1].length; i++) {
+            System.out.printf("%02d-%02d %d öre\n", array2[0][i], array2[0][i] + 1, array2[1][i]);
         }
     }
 
@@ -156,6 +177,47 @@ public class App {
         double average = ((double) min / (double) 4);
         System.out.printf("Påbörja laddning klockan %02d\n", time);
         System.out.printf("Medelpris 4h: %.1f öre/kWh\n", average);
+    }
+
+    public static void printDiagram(int[][] array) {
+        int min = array[1][0];
+        int max = array[1][0];
+        int minIndex = array[0][0];
+        int maxIndex = array[0][0];
+        int sum = 0;
+        double average;
+        for (int i = 0; i < array[1].length; i++) {
+            if (array[1][i] < min) {
+                min = array[1][i];
+                minIndex = array[0][i];
+            }
+            if (array[1][i] > max) {
+                max = array[1][i];
+                maxIndex = array[0][i];
+            }
+            sum += array[1][i];
+        }
+
+        int range = (max - min) / 5;
+        for (int i = 0; i < 5; i++) {
+            if (i == 0) {
+                System.out.printf("\n%3d| ", max);
+            } else {
+                System.out.printf("\n   | ");
+            }
+            for (int j = 0; j < array[1].length; j++) {
+                if (array[1][j] >= max - i * range) {
+                    System.out.printf(" x ");
+                } else
+                    System.out.printf("   ");
+            }
+        }
+        System.out.printf("\n%3d| ", min);
+        for (int i = 0; i < array[1].length; i++) {
+            System.out.printf(" x ");
+        }
+        System.out.printf("\n   |------------------------------------------------------------------------");
+        System.out.printf("\n   | 00 01 02 03 04 05 06 07 08 09 10 11 12 13 14 15 16 17 18 19 20 21 22 23\n");
     }
 }
 
