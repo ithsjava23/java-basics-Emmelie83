@@ -1,6 +1,5 @@
 package org.example;
 
-import java.sql.SQLOutput;
 import java.util.Scanner;
 
 public class App {
@@ -11,7 +10,6 @@ public class App {
         // Declare and initialize variables
         int selection;
         int[][] timeAndPrices = new int[2][24];
-
 
         while(true) {
             selection = printMenu();
@@ -26,10 +24,9 @@ public class App {
                     sortAndPrintArray(timeAndPrices);
                     break;
                 case 4:
-
+                    findBestChargingTime(timeAndPrices);
                     break;
                 case -1:
-                    // End the program
                     return;
             }
         }
@@ -40,7 +37,7 @@ public class App {
      * @return user's selection
      */
     public static int printMenu() {
-        int selection = 0;
+        int selection;
         System.out.printf("\nElpriser\n");
         System.out.printf("========\n");
         System.out.printf("1. Inmatning\n");
@@ -146,7 +143,20 @@ public class App {
         }
     }
 
-
+    public static void findBestChargingTime(int[][] array) {
+        int min = array[1][0] + array[1][1] + array[1][2] + array[1][3];
+        int time = array[0][0];
+        for (int i = 1; i < array[1].length - 3; i++) {
+            int group = array[1][i] + array[1][i + 1] + array[1][i + 2] + array[1][i + 3];
+            if (group < min) {
+                min = group;
+                time = array[0][i];
+            }
+        }
+        double average = ((double) min / (double) 4);
+        System.out.printf("Påbörja laddning klockan %02d\n", time);
+        System.out.printf("Medelpris 4h: %.1f öre/kWh\n", average);
+    }
 }
 
 
