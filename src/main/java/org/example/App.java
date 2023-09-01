@@ -46,7 +46,7 @@ public class App {
         System.out.printf("2. Min, Max och Medel\n");
         System.out.printf("3. Sortera\n");
         System.out.printf("4. Bästa Laddningstid (4h)\n");
-        System.out.printf("5. Skapa diagram\n");
+        System.out.printf("5. Visualisering\n");
         System.out.printf("e. Avsluta\n");
         selection = input();
         return selection;
@@ -111,27 +111,45 @@ public class App {
     }
 
     public static void findMinMaxAverage(int[][] array) {
-        int min = array[1][0];
-        int max = array[1][0];
-        int minIndex = array[0][0];
-        int maxIndex = array[0][0];
+        int min = findMin(array);
+        int max = findMax(array);
+        int minIndex = 0;
+        int maxIndex = 0;
         int sum = 0;
-        double average;
         for (int i = 0; i < array[1].length; i++) {
-            if (array[1][i] < min) {
-                min = array[1][i];
+            sum += array[1][i];
+            if (array[1][i] == min) {
                 minIndex = array[0][i];
             }
-            if (array[1][i] > max) {
-                max = array[1][i];
+            if (array[1][i] == max) {
                 maxIndex = array[0][i];
             }
-            sum += array[1][i];
         }
+        double average;
         average = (double) sum / (double) array[1].length;
         System.out.printf("\nLägsta pris: %02d-%02d, %d öre/kWh\n", minIndex, minIndex + 1, min);
         System.out.printf("Högsta pris: %02d-%02d, %d öre/kWh\n", maxIndex, maxIndex + 1, max);
         System.out.printf("Medelpris: %.2f öre/kWh\n", average);
+    }
+
+    public static int findMin(int[][] array) {
+        int min = array[1][0];
+        for (int i = 0; i < array[1].length; i++) {
+            if (array[1][i] < min) {
+                min = array[1][i];
+            }
+        }
+        return min;
+    }
+
+    public static int findMax(int[][] array) {
+        int max = array[1][0];
+        for (int i = 0; i < array[1].length; i++) {
+            if (array[1][i] > max) {
+                max = array[1][i];
+            }
+        }
+        return max;
     }
 
     public static void sortAndPrintArray(int[][] array) {
@@ -180,41 +198,52 @@ public class App {
     }
 
     public static void printDiagram(int[][] array) {
-        int min = array[1][0];
-        int max = array[1][0];
-        int minIndex = array[0][0];
-        int maxIndex = array[0][0];
-        int sum = 0;
-        double average;
+        int min = findMin(array);
+        int max = findMax(array);
+
+
+        double range = (max - min - 1) / 5.0;
+        System.out.println(range);
+        System.out.printf("%3d| ", max);
         for (int i = 0; i < array[1].length; i++) {
-            if (array[1][i] < min) {
-                min = array[1][i];
-                minIndex = array[0][i];
+            if (array[1][i] == max) {
+                if (i == array[1].length - 1) {
+                    System.out.printf(" x");
+                } else {
+                    System.out.printf(" x ");
+                }
+            } else {
+                if (i == array[1].length - 1) {
+                    System.out.printf("  ");
+                } else {
+                    System.out.printf("   ");
+                }
             }
-            if (array[1][i] > max) {
-                max = array[1][i];
-                maxIndex = array[0][i];
-            }
-            sum += array[1][i];
         }
 
-        int range = (max - min) / 5;
-        for (int i = 0; i < 5; i++) {
-            if (i == 0) {
-                System.out.printf("\n%3d| ", max);
-            } else {
-                System.out.printf("\n   | ");
-            }
+        for (int i = 1; i < 5; i++) {
+            System.out.printf("\n   | ");
             for (int j = 0; j < array[1].length; j++) {
-                if (array[1][j] >= max - i * range) {
-                    System.out.printf(" x ");
-                } else
-                    System.out.printf("   ");
+                if (array[1][j] >= max - 1 -  i * range) {
+                    if (j == array[1].length - 1) {
+                        System.out.printf(" x");
+                    } else System.out.printf(" x ");
+                } else {
+                    if (j == array[1].length - 1) {
+                        System.out.printf("  ");
+                    } else
+                        System.out.printf("   ");
+                }
+
             }
         }
         System.out.printf("\n%3d| ", min);
         for (int i = 0; i < array[1].length; i++) {
-            System.out.printf(" x ");
+            if (i == array[1].length - 1) {
+                System.out.printf(" x");
+            } else {
+                System.out.printf(" x ");
+            }
         }
         System.out.printf("\n   |------------------------------------------------------------------------");
         System.out.printf("\n   | 00 01 02 03 04 05 06 07 08 09 10 11 12 13 14 15 16 17 18 19 20 21 22 23\n");
