@@ -1,20 +1,23 @@
 package org.example;
 
+import java.util.Locale;
 import java.util.Scanner;
 
 public class App {
 
     public static void main(String[] args) {
+        Locale swedishLocale = new Locale("sv", "SE");
+        Locale.setDefault(swedishLocale);
         Scanner scan = new Scanner(System.in);
         int selection;
-        int[][] timeAndPrices = new int[2][24];
+        int[] timeAndPrices = new int[24];
         int[][] sortedArray = new int[2][24];
         int min;
         int max;
         double average;
 
         while(true) {
-            printMenu(scan);
+            printMenu();
             selection = getUserInput(scan);
             switch (selection) {
                 case 1:
@@ -27,8 +30,7 @@ public class App {
                     printMinMaxAverage(timeAndPrices, min, max, average);
                     break;
                 case 3:
-                    sortedArray = sortArray(timeAndPrices);
-                    printSortedArray(sortedArray);
+                    printSortedArray(sortArray(timeAndPrices, sortedArray));
                     break;
                 case 4:
                     findBestChargingTime(timeAndPrices);
@@ -42,7 +44,7 @@ public class App {
     }
 
 
-    public static void printMenu(Scanner scan) {
+    public static void printMenu() {
         System.out.printf("\nElpriser\n");
         System.out.printf("========\n");
         System.out.printf("1. Inmatning\n");
@@ -73,12 +75,11 @@ public class App {
         }
     }
 
-    public static void inputPrices(Scanner scan, int[][] array) {
+    public static void inputPrices(Scanner scan, int[] array) {
         System.out.printf("Ange elpriserna under dygnets timmar i hela ören.");
-        for (int i = 0; i < array[1].length; i++) {
+        for (int i = 0; i < array.length; i++) {
             System.out.printf("\nElpriset kl. %02d-%02d: ", i, i + 1);
-            array[0][i] = i;
-            array[1][i] = checkInputPrices(scan);
+            array[i] = checkInputPrices(scan);
         }
     }
 
@@ -93,45 +94,45 @@ public class App {
         }
     }
 
-    public static int findMin(int[][] array) {
-        int min = array[1][0];
-        for (int i = 0; i < array[1].length; i++) {
-            if (array[1][i] < min) {
-                min = array[1][i];
+    public static int findMin(int[] array) {
+        int min = array[0];
+        for (int i = 0; i < array.length; i++) {
+            if (array[i] < min) {
+                min = array[i];
             }
         }
         return min;
     }
 
-    public static int findMax(int[][] array) {
-        int max = array[1][0];
-        for (int i = 0; i < array[1].length; i++) {
-            if (array[1][i] > max) {
-                max = array[1][i];
+    public static int findMax(int[] array) {
+        int max = array[0];
+        for (int i = 0; i < array.length; i++) {
+            if (array[i] > max) {
+                max = array[i];
             }
         }
         return max;
     }
 
-    public static double findAverage(int[][] array, int min, int max) {
+    public static double findAverage(int[] array, int min, int max) {
         int sum = 0;
 
-        for (int i = 0; i < array[1].length; i++) {
-            sum += array[1][i];
+        for (int i = 0; i < array.length; i++) {
+            sum += array[i];
         }
 
-        return (double) sum / (double) array[1].length;
+        return (double) sum / (double) array.length;
     }
 
-    public static void printMinMaxAverage(int[][] array, int min, int max, double average) {
+    public static void printMinMaxAverage(int[] array, int min, int max, double average) {
         int minIndex = 0;
         int maxIndex = 0;
-        for (int i = 0; i < array[1].length; i++) {
-            if (array[1][i] == min) {
-                minIndex = array[0][i];
+        for (int i = 0; i < array.length; i++) {
+            if (array[i] == min) {
+                minIndex = i;
             }
-            if (array[1][i] == max) {
-                maxIndex = array[0][i];
+            if (array[i] == max) {
+                maxIndex = i;
             }
         }
         System.out.printf("\nLägsta pris: %02d-%02d, %d öre/kWh\n", minIndex, minIndex + 1, min);
@@ -140,11 +141,10 @@ public class App {
     }
 
 
-    public static int[][] sortArray(int[][] array) {
-        int[][] array2 = new int[2][24];
-        for (int i = 0; i < array[1].length; i++) {
-            array2[0][i] = array[0][i];
-            array2[1][i] = array[1][i];
+    public static int[][] sortArray(int[] array, int[][] array2) {
+        for (int i = 0; i < array.length; i++) {
+            array2[0][i] = i;
+            array2[1][i] = array[i];
         }
         int temp;
         for (int i = 0; i < array2[1].length; i++)
@@ -172,14 +172,14 @@ public class App {
         }
     }
 
-    public static void findBestChargingTime(int[][] array) {
-        int min = array[1][0] + array[1][1] + array[1][2] + array[1][3];
-        int time = array[0][0];
-        for (int i = 1; i < array[1].length - 3; i++) {
-            int group = array[1][i] + array[1][i + 1] + array[1][i + 2] + array[1][i + 3];
+    public static void findBestChargingTime(int[] array) {
+        int min = array[0] + array[1] + array[2] + array[3];
+        int time = 0;
+        for (int i = 1; i < array.length - 3; i++) {
+            int group = array[i] + array[i + 1] + array[i + 2] + array[i + 3];
             if (group < min) {
                 min = group;
-                time = array[0][i];
+                time = i;
             }
         }
         double average = ((double) min / (double) 4);
@@ -187,49 +187,38 @@ public class App {
         System.out.printf("Medelpris 4h: %.1f öre/kWh\n", average);
     }
 
-    public static void printDiagram(int[][] array) {
+    public static void printDiagram(int[] array) {
         int minPrice = findMin(array);
         int maxPrice = findMax(array);
         int incrementRange =  (maxPrice - minPrice) / 5;
 
         System.out.printf("%3d| ", maxPrice);
-        for (int i = 0; i < array[1].length; i++) {
-            if (array[1][i] == maxPrice) {
-                if (i == array[1].length - 1) {
-                    System.out.printf(" x");
-                } else System.out.printf(" x ");
-            } else {
-                if (i == array[1].length - 1) {
-                    System.out.printf("  ");
-                } else
+        for (int i = 0; i < array.length; i++)
+            if (array[i] == maxPrice)
+                if (i == array.length - 1) System.out.printf(" x");
+                else System.out.printf(" x ");
+            else if (i == array.length - 1) System.out.printf("  ");
+            else
+                System.out.printf("   ");
+
+        for (int i = 4; i > 0; i--) {
+                System.out.printf("\n   | ");
+            for (int j = 0; j < array.length; j++) {
+                if (array[j] >= minPrice + i * incrementRange) {
+                    if (j == array.length - 1) System.out.printf(" x");
+                    else System.out.printf(" x ");
+                } else if (j == array.length - 1) System.out.printf("  ");
+                else
                     System.out.printf("   ");
             }
         }
 
-        for (int i = 4; i > 0; i--) {
-                System.out.printf("\n   | ");
-            for (int j = 0; j < array[1].length; j++) {
-                if (array[1][j] >= minPrice + i * incrementRange) {
-                    if (j == array[1].length - 1) {
-                        System.out.printf(" x");
-                    } else System.out.printf(" x ");
-                } else {
-                    if (j == array[1].length - 1) {
-                        System.out.printf("  ");
-                    } else
-                        System.out.printf("   ");
-                }
-            }
-        }
-
         System.out.printf("\n%3d| ", minPrice);
-        for (int i = 0; i < array[1].length; i++) {
-            if (i == array[1].length - 1) {
-                System.out.printf(" x");
-            } else {
+        for (int i = 0; i < array.length; i++)
+            if (i == array.length - 1) System.out.printf(" x");
+            else {
                 System.out.printf(" x ");
             }
-        }
         System.out.printf("\n   |------------------------------------------------------------------------");
         System.out.printf("\n   | 00 01 02 03 04 05 06 07 08 09 10 11 12 13 14 15 16 17 18 19 20 21 22 23\n");
 
