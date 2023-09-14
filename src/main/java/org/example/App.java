@@ -26,7 +26,7 @@ public class App {
                 case 2:
                     min = findMin(timeAndPrices);
                     max = findMax(timeAndPrices);
-                    average = findAverage(timeAndPrices, min, max);
+                    average = findAverage(timeAndPrices);
                     printMinMaxAverage(timeAndPrices, min, max, average);
                     break;
                 case 3:
@@ -96,9 +96,9 @@ public class App {
 
     public static int findMin(int[] array) {
         int min = array[0];
-        for (int i = 0; i < array.length; i++) {
-            if (array[i] < min) {
-                min = array[i];
+        for (int j : array) {
+            if (j < min) {
+                min = j;
             }
         }
         return min;
@@ -106,19 +106,19 @@ public class App {
 
     public static int findMax(int[] array) {
         int max = array[0];
-        for (int i = 0; i < array.length; i++) {
-            if (array[i] > max) {
-                max = array[i];
+        for (int j : array) {
+            if (j > max) {
+                max = j;
             }
         }
         return max;
     }
 
-    public static double findAverage(int[] array, int min, int max) {
+    public static double findAverage(int[] array) {
         int sum = 0;
 
-        for (int i = 0; i < array.length; i++) {
-            sum += array[i];
+        for (int j : array) {
+            sum += j;
         }
 
         return (double) sum / (double) array.length;
