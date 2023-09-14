@@ -116,11 +116,9 @@ public class App {
 
     public static double findAverage(int[] array) {
         int sum = 0;
-
         for (int j : array) {
             sum += j;
         }
-
         return (double) sum / (double) array.length;
     }
 
